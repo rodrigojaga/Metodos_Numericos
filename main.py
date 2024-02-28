@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-
+contador_iteraciones = 0
 
 blanco = "\033[37m"
 fondoRojo = "\033[41m"
@@ -13,13 +13,14 @@ quitarColor = "\u001B[0m"
 
 def main():
     opcion: int = 0
-    while opcion != 4:
+    while opcion != 5:
         print("||---------------------------------------------------||")
         print("||              SELECCIONE OPCION                    ||")
         print("||              1. Raices ecua. cuadratica           ||")
         print("||              2. Metodo Biseccion UMG              ||")
         print("||              3. Metodo Newton-Rapson              ||")
-        print("||              4. SALIR                             ||")
+        print("||              4. Metodo Newton-Rapson Modificado   ||")
+        print("||              5. SALIR                             ||")
         print("||---------------------------------------------------||\n")
         opcion = int(input("Su opcion es: "))
         if opcion == 1:
@@ -28,6 +29,8 @@ def main():
             metodoBiseccionUMGIniciador()
         if opcion == 3:
             metodoNewtonRapsonIniciador()
+        if opcion == 4:
+            metodoNewtonRapsonModificadoIniciador()
 
     print("Gracias por usar este programa")
 
@@ -71,6 +74,7 @@ def valores_de_x1_y_x2_con_formula_cuadratica():
 
 
 def metodoBiseccionUMGIniciador():
+
     print("Este programa busca las raices de una funcion"
           " por medio del metodo de Biseccion \n"
           "Ingrese valores para: \n")
@@ -92,6 +96,10 @@ def metodoBiseccionUMGIniciador():
          metodoBiseccionUMGIniciador()
     else:
 
+        print("||==================||")
+        print("|| Iteracion No. 0  ||")
+        print("||==================||")
+
         print(f"Primer Xl = {Xl}")
         print(f"f(Xl) = {fXl}")
         print(f"Primer Xu = {Xu}")
@@ -106,6 +114,7 @@ def metodoBiseccionUMGIniciador():
 
         print(f"f(Xr) = {fXr}")
 
+        contador_IteracionesEsCero()
         """Paso 3"""
         # A
         if fXl * fXr < 0:
@@ -148,12 +157,20 @@ def metodoBiseccionUMG(Xl: float, Xu: float, errorAbs: float, XrAnterior:float):
         E = |(XrNuevo - XrAnterior) / XrNuevo| * 100%
     """
 
+
+
     #Error, hasta donde vamos a llegar?
     #Cambiar en caso de ser necesario
     error:float = 0.001
 
     print("-----------------------------------")
     if error<=errorAbs:
+
+        iteracion = contador_IteraccionesMetodo()
+
+        print("||==================||")
+        print(f"|| Iteracion No. {iteracion}  ||")
+        print("||==================||")
 
         #Cambiar en caso de ser necesario
         fXl:float = ((math.e ** (3*Xl)) - 4)
@@ -192,27 +209,37 @@ def metodoBiseccionUMG(Xl: float, Xu: float, errorAbs: float, XrAnterior:float):
 ###################################################################################
 
 def metodoNewtonRapsonIniciador():
+
     print("Este programa busca las raices de una funcion"
           " por medio del metodo de Newton-Rapson \n"
           "Ingrese valor para: \n")
     Xi: float = float(input("Xi: "))
+    contador_IteracionesEsCero
     metodoNewtonRapson(Xi, 1)
 
 def metodoNewtonRapson(Xi: float, errorAbs: float):
 
-    error: float = 0.0005
+    error: float = 0.00001
     print("--------------------------------------")
     if error<=errorAbs:
+
+        iteracion = contador_IteraccionesMetodo()
+
+        print("||==================||")
+        print(f"|| Iteracion No. {iteracion-1}  ||")
+        print("||==================||")
+
         print(f"Xi = {Xi}")
         #Cambiar en caso de ser necesario
-        print((-(Xi**2)))
-        print(18*Xi)
-        fXi:float = (-(Xi**2)) + (18 * Xi) + 2.5
+        #8 * math.e**(-0.5*Xi) * math.cos(3*Xi)
+        fXi:float =Xi ** 4 +Xi-3
+
 
         print(f"f(Xi) = {fXi}")
 
         #Cambiar segun la derivada de la funcion original
-        fXiDerivada:float = 18 - 2*Xi
+        #-4 * math.e**(-0.5*Xi) * math.cos(3*Xi) - 24 * math.e**(-0.5*Xi) * math.sin(3*Xi)
+        fXiDerivada:float = 4*Xi**3 + 1
 
         print(f"f'(Xi) = {fXiDerivada}")
         XiSiguiente:float = Xi - (fXi / fXiDerivada)
@@ -224,6 +251,58 @@ def metodoNewtonRapson(Xi: float, errorAbs: float):
     else:
         print(f"La raiz es aproximadamene: {Xi}")
 
+########################################################################
+
+def metodoNewtonRapsonModificadoIniciador():
+    print("Este programa busca las raices de una funcion"
+          " por medio del metodo de Newton-Rapson Modificado\n"
+          "Ingrese valor para: \n")
+    Xi: float = float(input("Xi: "))
+    contador_IteracionesEsCero
+    metodoNewtonRapsonModificado(Xi, 1)
+
+def metodoNewtonRapsonModificado(Xi: float, errorAbs: float):
+
+    error: float = 0.0001
+    print("--------------------------------------")
+    if error<=errorAbs:
+
+        iteracion = contador_IteraccionesMetodo()
+
+        print("||==================||")
+        print(f"|| Iteracion No. {iteracion-1}  ||")
+        print("||==================||")
+
+        print(f"Xi = {Xi}")
+        #Cambiar en caso de ser necesario
+        #math.e**math.sqrt(Xi) * math.sin(2*Xi) + math.cos(Xi**3)
+        fXi:float = -0.9*Xi**2 + 1.7*Xi + 2.5
+
+        print(f"f(Xi) = {fXi}")
+
+        #Cambiar segun la derivada de la funcion original
+        #2*math.e**(math.sqrt(Xi))*math.cos(2*Xi) + 0.5*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/math.sqrt(Xi) - 3*Xi**2*math.sin(Xi**3)
+        fXiDerivada:float = -1.8*Xi + 1.7
+
+        print(f"f'(Xi) = {fXiDerivada}")
+
+        #Cambiar segun la segunda derivada de la funcion original
+        #-4*math.e**(math.sqrt(Xi))*math.sin(2*Xi) + 0.25*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/Xi + 2.0*math.e**(math.sqrt(Xi))*math.cos(2*Xi)/math.sqrt(Xi) - 0.25*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/Xi**(3/2) - 9*Xi**4*math.cos(Xi**3) - 6*Xi*math.sin(Xi**3)
+        fXisegundaDerivada:float = -1.8
+
+        print(f"f''(Xi) = {fXisegundaDerivada}")
+
+        XiSiguiente:float = Xi - ((fXi*fXiDerivada) / (fXiDerivada**2 - fXi*fXisegundaDerivada))
+        print(f"Xi+1 = {XiSiguiente}")
+        errorActual: float = calcularError(XiSiguiente, Xi)
+        print(f"Error Actual = {errorActual}")
+
+        metodoNewtonRapsonModificado(XiSiguiente, errorActual)
+    else:
+        print(f"La raiz es aproximadamene: {Xi}")
+
+
+
 
 def calcularError(Xr: float, XrAnterior: float):
 
@@ -232,6 +311,14 @@ def calcularError(Xr: float, XrAnterior: float):
 
     return abs((Xr - XrAnterior) / Xr)
 
+def contador_IteraccionesMetodo():
+    global contador_iteraciones
+    contador_iteraciones+=1
+    return  contador_iteraciones
+
+def contador_IteracionesEsCero():
+    global contador_iteraciones
+    contador_iteraciones = 0
 
 
 if __name__ == "__main__":

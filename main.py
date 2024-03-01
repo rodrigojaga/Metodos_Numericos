@@ -1,6 +1,9 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import pdfkit
 import math
+
+import archivos
+from objResultado import NRMResultado, NRSimpleResultado, biseccionResultado, ecuacionCuadraticaResultado
+from archivos import *
 
 contador_iteraciones = 0
 
@@ -8,20 +11,27 @@ blanco = "\033[37m"
 fondoRojo = "\033[41m"
 quitarColor = "\u001B[0m"
 
+lista_para_pdf = []
 
-#Metodo de biseccion
+
+# Metodo de biseccion
 
 def main():
+    global lista_para_pdf
     opcion: int = 0
-    while opcion != 5:
+    while opcion != 6:
         print("||---------------------------------------------------||")
         print("||              SELECCIONE OPCION                    ||")
         print("||              1. Raices ecua. cuadratica           ||")
         print("||              2. Metodo Biseccion UMG              ||")
         print("||              3. Metodo Newton-Rapson              ||")
         print("||              4. Metodo Newton-Rapson Modificado   ||")
-        print("||              5. SALIR                             ||")
+        print("||              5. Finalizar Documento               ||")
+        print("||              6. SALIR                             ||")
         print("||---------------------------------------------------||\n")
+        lista_para_pdf = []
+        lista_para_pdf.clear()
+        lista_para_pdf[:] = []
         opcion = int(input("Su opcion es: "))
         if opcion == 1:
             valores_de_x1_y_x2_con_formula_cuadratica()
@@ -31,11 +41,17 @@ def main():
             metodoNewtonRapsonIniciador()
         if opcion == 4:
             metodoNewtonRapsonModificadoIniciador()
+        if opcion == 5:
+            archivos.finalizarPDF()
 
     print("Gracias por usar este programa")
 
 
 def valores_de_x1_y_x2_con_formula_cuadratica():
+    global lista_para_pdf
+    lista_para_pdf = []
+    lista_para_pdf.clear()
+    lista_para_pdf[:] = []
     print("Este programa pide los coeficientes de ecuaciones"
           + " cuadraticas para determinarlas mediante la formula: \n"
           + " (-b+√b^2-4ac)/2a y (-b-√b^2-4ac)/2a")
@@ -61,19 +77,30 @@ def valores_de_x1_y_x2_con_formula_cuadratica():
     temp_b_f = (-b) / (2 * a)
     temp_b_sqr = temp_sqr / (2 * a)
 
+    resultadosParapdf = None
+
     if es_compleja:
         print("La respuesta de los coeficientes ingresados es: ")
         print(blanco + f"X1 = {temp_b_f} + {temp_b_sqr}i")
         print(f"X2 = {temp_b_f} - {temp_b_sqr}i{quitarColor}")
+        resultadosParapdf = ecuacionCuadraticaResultado(a, b, c, f"{temp_b_f} + {temp_b_sqr}i", f"{temp_b_f} - {temp_b_sqr}i")
     else:
         print("La respuesta de los coeficientes ingresados es: ")
         print(blanco + f"X1 = {temp_b_f - temp_b_sqr}")
         print(f"X2 = {temp_b_f + temp_b_sqr}{quitarColor}")
+        resultadosParapdf = ecuacionCuadraticaResultado(a, b, c, (temp_b_f - temp_b_sqr), (temp_b_f + temp_b_sqr))
+    lista_para_pdf.append(resultadosParapdf)
+    archivos.crearTabla(True, False, False, False, lista_para_pdf)
+
 
 ##################################################################################
 
 
 def metodoBiseccionUMGIniciador():
+    global contador_iteraciones, lista_para_pdf
+    lista_para_pdf = []
+    lista_para_pdf.clear()
+    lista_para_pdf[:] = []
 
     print("Este programa busca las raices de una funcion"
           " por medio del metodo de Biseccion \n"
@@ -83,17 +110,17 @@ def metodoBiseccionUMGIniciador():
     Xl: float = float(input("Xl (inferior): "))
     Xu: float = float(input("Xu (superior): "))
 
-    #math.
-    #Cambiar en caso de ser necesario
-    fXl: float = ((math.e ** (3*Xl)) - 4)
-    fXu: float = ((math.e ** (3*Xu)) - 4)
+    # math.
+    # Cambiar en caso de ser necesario
+    fXl: float = ((math.e ** (3 * Xl)) - 4)
+    fXu: float = ((math.e ** (3 * Xu)) - 4)
 
-    #print(f"f(Xl) = {fXl}")
-    #print(f"f(Xu) = {fXu}")
+    # print(f"f(Xl) = {fXl}")
+    # print(f"f(Xu) = {fXu}")
 
     if not (fXl * fXu < 0):
-         print(f"Los valores Xl = {Xl} y Xu = {Xu} no son validos ")
-         metodoBiseccionUMGIniciador()
+        print(f"Los valores Xl = {Xl} y Xu = {Xu} no son validos ")
+        metodoBiseccionUMGIniciador()
     else:
 
         print("||==================||")
@@ -110,11 +137,12 @@ def metodoBiseccionUMGIniciador():
         print(f"Primer Xr = {Xr}")
 
         # Cambiar en caso de ser necesario
-        fXr: float = ((math.e ** (3*Xr)) - 4)
+        fXr: float = ((math.e ** (3 * Xr)) - 4)
 
         print(f"f(Xr) = {fXr}")
 
-        contador_IteracionesEsCero()
+        contador_iteraciones = 0
+        lista_para_pdf.append(biseccionResultado(0, Xl, fXl, Xu, fXu, Xr, fXr, "---"))
         """Paso 3"""
         # A
         if fXl * fXr < 0:
@@ -125,9 +153,10 @@ def metodoBiseccionUMGIniciador():
         # C
         elif fXl * fXr == 0:
             print(f"La raiz esta en {Xr}")
+            archivos.crearTabla(False, True, False, False, lista_para_pdf)
 
 
-def metodoBiseccionUMG(Xl: float, Xu: float, errorAbs: float, XrAnterior:float):
+def metodoBiseccionUMG(Xl: float, Xu: float, errorAbs: float, XrAnterior: float):
     """
     Valor inicial inferior Xl
     Valor inicial superior Xu
@@ -156,15 +185,14 @@ def metodoBiseccionUMG(Xl: float, Xu: float, errorAbs: float, XrAnterior:float):
     La ecuacion para determinar cuanto de Error tenemos es:
         E = |(XrNuevo - XrAnterior) / XrNuevo| * 100%
     """
+    global lista_para_pdf
 
-
-
-    #Error, hasta donde vamos a llegar?
-    #Cambiar en caso de ser necesario
-    error:float = 0.001
+    # Error, hasta donde vamos a llegar?
+    # Cambiar en caso de ser necesario
+    error: float = 0.001
 
     print("-----------------------------------")
-    if error<=errorAbs:
+    if error <= errorAbs:
 
         iteracion = contador_IteraccionesMetodo()
 
@@ -172,9 +200,9 @@ def metodoBiseccionUMG(Xl: float, Xu: float, errorAbs: float, XrAnterior:float):
         print(f"|| Iteracion No. {iteracion}  ||")
         print("||==================||")
 
-        #Cambiar en caso de ser necesario
-        fXl:float = ((math.e ** (3*Xl)) - 4)
-        fXu:float = ((math.e ** (3*Xu)) - 4)
+        # Cambiar en caso de ser necesario
+        fXl: float = ((math.e ** (3 * Xl)) - 4)
+        fXu: float = ((math.e ** (3 * Xu)) - 4)
 
         print(f"Xl = {Xl}")
         print(f"f(Xl) = {fXl}")
@@ -182,143 +210,168 @@ def metodoBiseccionUMG(Xl: float, Xu: float, errorAbs: float, XrAnterior:float):
         print(f"f(Xu) = {fXu}")
 
         """Paso 2"""
-        Xr:float = (Xl + Xu) / 2
+        Xr: float = (Xl + Xu) / 2
         print(f"Xr = {Xr}")
 
-        #Cambiar en caso de ser necesario
-        fXr: float = ((math.e ** (3*Xr)) - 4)
+        # Cambiar en caso de ser necesario
+        fXr: float = ((math.e ** (3 * Xr)) - 4)
 
         print(f"f(Xr) = {fXr}")
 
         errorNuevo: float = calcularError(Xr, XrAnterior)
         print(f"Error Actual = {errorNuevo}")
 
+        lista_para_pdf.append(biseccionResultado(iteracion, Xl, fXl, Xu, fXu, Xr, fXr, errorNuevo))
+
         """Paso 3"""
-        #A
+        # A
         if fXl * fXr < 0:
             metodoBiseccionUMG(Xl, Xr, errorNuevo, Xr)
-        #B
+        # B
         elif fXl * fXr > 0:
             metodoBiseccionUMG(Xr, Xu, errorNuevo, Xr)
-        #C
+        # C
         elif fXl * fXr == 0:
             print(f"La raiz esta en {Xr}")
     else:
+        archivos.crearTabla(False, True, False, False, lista_para_pdf)
         print(f"La raiz es aproximadamente: {XrAnterior}")
+        lista_para_pdf = []
+        lista_para_pdf.clear()
+        lista_para_pdf[:] = []
+
 
 ###################################################################################
 
 def metodoNewtonRapsonIniciador():
-
+    global contador_iteraciones, lista_para_pdf
     print("Este programa busca las raices de una funcion"
           " por medio del metodo de Newton-Rapson \n"
           "Ingrese valor para: \n")
     Xi: float = float(input("Xi: "))
-    contador_IteracionesEsCero
+    contador_iteraciones = 0
+    lista_para_pdf = []
+    lista_para_pdf.clear()
+    lista_para_pdf[:] = []
     metodoNewtonRapson(Xi, 1)
 
-def metodoNewtonRapson(Xi: float, errorAbs: float):
 
+def metodoNewtonRapson(Xi: float, errorAbs: float):
+    global lista_para_pdf
     error: float = 0.00001
     print("--------------------------------------")
-    if error<=errorAbs:
+    if error <= errorAbs:
 
-        iteracion = contador_IteraccionesMetodo()
+        iteracion = contador_IteraccionesMetodo()-1
 
         print("||==================||")
-        print(f"|| Iteracion No. {iteracion-1}  ||")
+        print(f"|| Iteracion No. {iteracion}  ||")
         print("||==================||")
 
         print(f"Xi = {Xi}")
-        #Cambiar en caso de ser necesario
-        #8 * math.e**(-0.5*Xi) * math.cos(3*Xi)
-        fXi:float =Xi ** 4 +Xi-3
-
+        # Cambiar en caso de ser necesario
+        # 8 * math.e**(-0.5*Xi) * math.cos(3*Xi)
+        fXi: float = Xi ** 4 + Xi - 3
 
         print(f"f(Xi) = {fXi}")
 
-        #Cambiar segun la derivada de la funcion original
-        #-4 * math.e**(-0.5*Xi) * math.cos(3*Xi) - 24 * math.e**(-0.5*Xi) * math.sin(3*Xi)
-        fXiDerivada:float = 4*Xi**3 + 1
+        # Cambiar segun la derivada de la funcion original
+        # -4 * math.e**(-0.5*Xi) * math.cos(3*Xi) - 24 * math.e**(-0.5*Xi) * math.sin(3*Xi)
+        fXiDerivada: float = 4 * Xi ** 3 + 1
 
         print(f"f'(Xi) = {fXiDerivada}")
-        XiSiguiente:float = Xi - (fXi / fXiDerivada)
+        XiSiguiente: float = Xi - (fXi / fXiDerivada)
         print(f"Xi+1 = {XiSiguiente}")
         errorActual: float = calcularError(XiSiguiente, Xi)
         print(f"Error Actual = {errorActual}")
 
+        lista_para_pdf.append(NRSimpleResultado(iteracion, Xi, fXi, fXiDerivada, XiSiguiente, errorActual))
+
         metodoNewtonRapson(XiSiguiente, errorActual)
     else:
+        archivos.crearTabla(False, False, True, False, lista_para_pdf)
         print(f"La raiz es aproximadamene: {Xi}")
+        lista_para_pdf = []
+        lista_para_pdf.clear()
+        lista_para_pdf[:] = []
+
 
 ########################################################################
 
 def metodoNewtonRapsonModificadoIniciador():
+    global lista_para_pdf, contador_iteraciones
     print("Este programa busca las raices de una funcion"
           " por medio del metodo de Newton-Rapson Modificado\n"
           "Ingrese valor para: \n")
     Xi: float = float(input("Xi: "))
-    contador_IteracionesEsCero
+    contador_iteraciones = 0
+    lista_para_pdf = []
+    lista_para_pdf.clear()
+    lista_para_pdf[:] = []
     metodoNewtonRapsonModificado(Xi, 1)
 
+
 def metodoNewtonRapsonModificado(Xi: float, errorAbs: float):
+    global lista_para_pdf
 
     error: float = 0.0001
     print("--------------------------------------")
-    if error<=errorAbs:
+    if error <= errorAbs:
 
-        iteracion = contador_IteraccionesMetodo()
+        iteracion = contador_IteraccionesMetodo() - 1
 
         print("||==================||")
-        print(f"|| Iteracion No. {iteracion-1}  ||")
+        print(f"|| Iteracion No. {iteracion}  ||")
         print("||==================||")
 
         print(f"Xi = {Xi}")
-        #Cambiar en caso de ser necesario
-        #math.e**math.sqrt(Xi) * math.sin(2*Xi) + math.cos(Xi**3)
-        fXi:float = -0.9*Xi**2 + 1.7*Xi + 2.5
+        # Cambiar en caso de ser necesario
+        # math.e**math.sqrt(Xi) * math.sin(2*Xi) + math.cos(Xi**3)
+        fXi: float = -0.9 * Xi ** 2 + 1.7 * Xi + 2.5
 
         print(f"f(Xi) = {fXi}")
 
-        #Cambiar segun la derivada de la funcion original
-        #2*math.e**(math.sqrt(Xi))*math.cos(2*Xi) + 0.5*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/math.sqrt(Xi) - 3*Xi**2*math.sin(Xi**3)
-        fXiDerivada:float = -1.8*Xi + 1.7
+        # Cambiar segun la derivada de la funcion original
+        # 2*math.e**(math.sqrt(Xi))*math.cos(2*Xi) + 0.5*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/math.sqrt(Xi) - 3*Xi**2*math.sin(Xi**3)
+        fXiDerivada: float = -1.8 * Xi + 1.7
 
         print(f"f'(Xi) = {fXiDerivada}")
 
-        #Cambiar segun la segunda derivada de la funcion original
-        #-4*math.e**(math.sqrt(Xi))*math.sin(2*Xi) + 0.25*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/Xi + 2.0*math.e**(math.sqrt(Xi))*math.cos(2*Xi)/math.sqrt(Xi) - 0.25*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/Xi**(3/2) - 9*Xi**4*math.cos(Xi**3) - 6*Xi*math.sin(Xi**3)
-        fXisegundaDerivada:float = -1.8
+        # Cambiar segun la segunda derivada de la funcion original
+        # -4*math.e**(math.sqrt(Xi))*math.sin(2*Xi) + 0.25*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/Xi + 2.0*math.e**(math.sqrt(Xi))*math.cos(2*Xi)/math.sqrt(Xi) - 0.25*math.e**(math.sqrt(Xi))*math.sin(2*Xi)/Xi**(3/2) - 9*Xi**4*math.cos(Xi**3) - 6*Xi*math.sin(Xi**3)
+        fXisegundaDerivada: float = -1.8
 
         print(f"f''(Xi) = {fXisegundaDerivada}")
 
-        XiSiguiente:float = Xi - ((fXi*fXiDerivada) / (fXiDerivada**2 - fXi*fXisegundaDerivada))
+        XiSiguiente: float = Xi - ((fXi * fXiDerivada) / (fXiDerivada ** 2 - fXi * fXisegundaDerivada))
         print(f"Xi+1 = {XiSiguiente}")
         errorActual: float = calcularError(XiSiguiente, Xi)
         print(f"Error Actual = {errorActual}")
 
+        datosMetodo = NRMResultado(iteracion, Xi, fXi, fXiDerivada, fXisegundaDerivada, XiSiguiente, errorActual)
+        lista_para_pdf.append(datosMetodo)
+
         metodoNewtonRapsonModificado(XiSiguiente, errorActual)
     else:
+        archivos.crearTabla(False, False, False, True, lista_para_pdf)
         print(f"La raiz es aproximadamene: {Xi}")
-
+        lista_para_pdf = []
+        lista_para_pdf.clear()
+        lista_para_pdf[:] = []
 
 
 
 def calcularError(Xr: float, XrAnterior: float):
-
     if Xr == 0:
         return 1
 
     return abs((Xr - XrAnterior) / Xr)
 
+
 def contador_IteraccionesMetodo():
     global contador_iteraciones
-    contador_iteraciones+=1
-    return  contador_iteraciones
-
-def contador_IteracionesEsCero():
-    global contador_iteraciones
-    contador_iteraciones = 0
+    contador_iteraciones += 1
+    return contador_iteraciones
 
 
 if __name__ == "__main__":

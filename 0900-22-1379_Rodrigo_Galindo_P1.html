@@ -1,0 +1,198 @@
+
+<style>
+table {
+   border-collapse: collapse;
+    width: 100%;
+}
+th, td{
+    padding: 0;
+    text-align: center;
+}
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+thead th{
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+td{
+    style="font-size: 1px;"
+}
+.encabezado {
+   background-color: #ccc;
+}
+.tabla {
+    background-color: #fff;
+}
+</style>
+<br>
+
+        <br>
+        <div>
+        <h5>newton-rapson simple</h5>
+        <table border="1" style="border-collapse: collapse; width: 100%;" class = "tabla">
+        <thead>
+        <tr>
+            <th class ="encabezado">     i     </th>
+            <th class ="encabezado">     Xi     </th>
+            <th class ="encabezado">     f(Xi)     </th>
+            <th class ="encabezado">     f'(Xi)     </th>
+            <th class ="encabezado">     Xi+1     </th>
+            <th class ="encabezado">     E     </th>
+        </tr>
+        </thead>
+        <br>
+        
+    <tr>
+        <td>0</td>
+        <td>0.0</td>
+        <td>-3.0</td>
+        <td>1.0</td>
+        <td>3.0</td>            
+        <td>1.0</td>
+    </tr>
+    </div>
+        
+    <tr>
+        <td>1</td>
+        <td>3.0</td>
+        <td>81.0</td>
+        <td>109.0</td>
+        <td>2.2568807339449544</td>            
+        <td>0.3292682926829267</td>
+    </tr>
+    </div>
+        
+    <tr>
+        <td>2</td>
+        <td>2.2568807339449544</td>
+        <td>25.200731447613585</td>
+        <td>46.98178419170537</td>
+        <td>1.7204870681619768</td>            
+        <td>0.3117684960898981</td>
+    </tr>
+    </div>
+        
+    <tr>
+        <td>3</td>
+        <td>1.7204870681619768</td>
+        <td>7.482535524038859</td>
+        <td>21.371088206405446</td>
+        <td>1.370362851193177</td>            
+        <td>0.2554974521266001</td>
+    </tr>
+    </div>
+        
+    <tr>
+        <td>4</td>
+        <td>1.370362851193177</td>
+        <td>1.8968500181585632</td>
+        <td>11.293586589551428</td>
+        <td>1.2024046916556668</td>            
+        <td>0.13968521638603887</td>
+    </tr>
+    </div>
+        
+    <tr>
+        <td>5</td>
+        <td>1.2024046916556668</td>
+        <td>0.29267594832070376</td>
+        <td>7.9536363960350505</td>
+        <td>1.1656069385591579</td>            
+        <td>0.03156960711129236</td>
+    </tr>
+    </div>
+        
+    <tr>
+        <td>6</td>
+        <td>1.1656069385591579</td>
+        <td>0.011508325214509618</td>
+        <td>7.334558677000075</td>
+        <td>1.1640378836614722</td>            
+        <td>0.0013479414370520418</td>
+    </tr>
+    </div>
+        
+    <tr>
+        <td>7</td>
+        <td>1.1640378836614722</td>
+        <td>2.0051274787213913e-05</td>
+        <td>7.309011737103426</td>
+        <td>1.164035140298141</td>            
+        <td>2.3567702006552405e-06</td>
+    </tr>
+    </div>
+        
+        <br>
+        <div>
+        <h5>newton - rapson modificado</h5>
+        <table border="1" style="border-collapse: collapse; width: 100%;" class = "tabla">
+        <thead>
+        <tr>
+            <th class ="encabezado">     i     </th>
+            <th class ="encabezado">     Xi     </th>
+            <th class ="encabezado">     f(Xi)     </th>
+            <th class ="encabezado">     f'(Xi)     </th>
+            <th class ="encabezado">     f''(Xi)     </th>
+            <th class ="encabezado">     Xi+1     </th>
+            <th class ="encabezado">     E     </th>
+        </tr>
+        </thead>
+        <br>
+        
+   <tr>
+       <td>0</td>
+       <td>0.0</td>
+       <td>2.5</td>
+       <td>1.7</td>
+       <td>-1.8</td>
+       <td>-0.5751014884979703</td>            
+       <td>1.0</td>
+   </tr>
+   </div>
+       
+   <tr>
+       <td>1</td>
+       <td>-0.5751014884979703</td>
+       <td>1.2246599196881276</td>
+       <td>2.7351826792963463</td>
+       <td>-1.8</td>
+       <td>-0.9209411267535983</td>            
+       <td>0.3755284981948242</td>
+   </tr>
+   </div>
+       
+   <tr>
+       <td>2</td>
+       <td>-0.9209411267535983</td>
+       <td>0.1710807814673143</td>
+       <td>3.3576940281564767</td>
+       <td>-1.8</td>
+       <td>-0.9705382784191178</td>            
+       <td>0.05110272594946679</td>
+   </tr>
+   </div>
+       
+   <tr>
+       <td>3</td>
+       <td>-0.9705382784191178</td>
+       <td>0.0023348317984295264</td>
+       <td>3.446968901154412</td>
+       <td>-1.8</td>
+       <td>-0.9712153968650753</td>            
+       <td>0.0006971866880850046</td>
+   </tr>
+   </div>
+       
+   <tr>
+       <td>4</td>
+       <td>-0.9712153968650753</td>
+       <td>4.129323647461547e-07</td>
+       <td>3.4481877143571356</td>
+       <td>-1.8</td>
+       <td>-0.9712155166185148</td>            
+       <td>1.2330264235795043e-07</td>
+   </tr>
+   </div>
+       
